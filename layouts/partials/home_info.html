@@ -1,0 +1,8 @@
+{{- with $.Site.Params.homeInfoParams }}
+
+    <h1 class="rem">{{- .Title }}</h1>
+
+    <p class="rem">{{- .Content | markdownify }}</p>
+
+
+{{- end}}

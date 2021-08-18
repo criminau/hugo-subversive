@@ -1,0 +1,115 @@
+{{- define "main" }}
+
+
+    <div class="post-header"> <!-- haut du post-->
+    {{- if .Params.hideMeta }}{{ else }}
+    <div class="post-meta">
+      &nbsp;·&nbsp;
+      <time>{{ .Date.Format "January 2, 2006" }}</time>
+      {{- if $.Site.Params.ShowReadingTime -}}&nbsp;·&nbsp;
+      {{- $default_txt := print .ReadingTime " " "min" }}
+      {{- i18n "read_time" .ReadingTime | default  $default_txt  }}{{ end }}
+      {{- if or .Params.author .Site.Params.author }}&nbsp;·&nbsp;{{- .Params.author | default .Site.Params.author }}{{ end }}
+ 
+      <!--- This is the end of meta. not for me. I add  printer option -->
+      &nbsp;·&nbsp;
+
+    </div><!--- This is the end of meta. not for me. I add  printer option -->
+    {{- end}}
+    <h1 class="post-title">
+      {{ .Title }}
+      {{- if .Draft }}
+      <div class="entry-isdraft"><sup>&nbsp;&nbsp;[{{ i18n "draft" }}]</sup></div>{{- end }}
+    </h1>
+    </div><!-- fin haut du post -->
+    
+<!--- Table of contents -->
+{{- if .Params.ShowToc }}
+<div class="toc-expand">
+  <label>
+      <div class="toc-expand-head flex justify-between">
+        <span>{{- i18n "toc" }}
+        </span>
+        <span> ↕ </span>
+      </div>
+      <input type="checkbox" class="hidden" />
+      <div class="toc-expand-content markdown-inner">
+      {{- partial "toc.html" . }}
+      </div>
+  </label>
+</div>
+{{- end }}
+
+    <!-- cover params -->
+    {{- if .Params.cover }}
+    <figure class="entry-cover">
+      <img src="{{ .Params.cover | absURL }}" alt="cover image for {{ .Title | plainify }}">
+    </figure>
+    {{- end }}
+
+    <!-- post content -->
+    <div class="post-content text-justify">
+    <!-- replace for anchor link search for copy link. -->
+          {{ .Content | replaceRE "(<h[1-6] id=\"(.+)\".*>)(.*)(</h[1-6]>)" `${1}<a href="#${2}">
+      <!-- space for text alink -->
+      <svg  class="my-link-anchor" xmlns="http://www.w3.org/2000/svg" class="feather" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+</svg>
+
+        </a>${3}${4}` | safeHTML }}
+    </div>
+
+    {{- if .Params.hideMeta }}{{ else }} <!-- hidemeta -->
+
+    <!-- post-footer =  Terms + Comments checkout by hidemeta -->
+    <!-- Terms = tags + series + categories 
+         If you want to put navbarshare in hidemeta, copy/paste in "if .params.hiteMeta else"-->
+         {{- if .Params.hideMeta }}{{ else }}
+         <div class="post-footer">
+           {{- if .Params.categories }}
+       
+           <ul class="">
+             <!-- here we use <li> for lighthouse accessibility .thx.-->
+             <li>
+               {{- range .Params.categories }}
+               {{- $href := print (absLangURL "categories/") (urlize .) }}
+               <button class="sample-btn"><a href="{{ $href }}">{{ . }}</a></button>&nbsp;·&nbsp;
+               {{- end }}
+             </li>
+           </ul>
+             <ul class="">
+             
+             <li>
+             {{- range .Params.tags }}
+             {{- $href := print (absLangURL "tags/") (urlize .) }}
+             <button class="sample-btn"><a href="{{ $href }}">{{ . }}</a></button>&nbsp;·&nbsp;
+             {{- end }}
+             </li>
+           </ul>
+           <ul class="">
+             
+             <li>
+             {{- range .Params.series }}
+             {{- $href := print (absLangURL "series/") (urlize .) }}
+             <button class="sample-btn"><a href="{{ $href }}">{{ . }}</a></button>&nbsp;·&nbsp;
+             {{- end }}
+           </li>
+           </ul>
+           {{- end }}
+         </div>
+         {{- end }}<!-- end of hidemeta secondsector -->
+
+    <!-- comments sector -->
+    {{- if $.Site.Params.comments }}
+    <div class="post-comments">
+      {{- partial "comments.html" . }}
+    </div>
+    {{- end }}
+
+    {{- end }} <!-- end hidemeta-->
+
+
+
+{{- end  }}{{/* end main */}}
